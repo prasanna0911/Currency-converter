@@ -1,0 +1,61 @@
+<html>
+<head>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div id="container">
+		<h1>Currency converter</h1>
+		<div id="box">
+			<div id="leftbox">
+				<select name="currency" class="currency"></select>
+				<input type="number" name="" id="input">
+			</div>
+			<div id="rightbox">
+				<select name="currency" class="currency"></select>
+				<input type="number" name="" id="result">
+			</div>
+		</div>
+		<div class="btn">
+			<button id="btn">Convert</button>
+		</div>
+		<div id="errorbox"></div>
+	</div>
+</body>
+<script>
+	let select=document.querySelectorAll(".currency")
+	let btn=document.getElementById('btn')
+	let input=document.getElementById("input")
+	let err=document.getElementById("errorbox")
+	let curr=fetch("https://api.frankfurter.app/currencies")
+	.then((res)=>res.json())
+	.then((res)=>disdropdown(res))
+	function disdropdown(res) {
+		let dropdown=Object.entries(res)
+		for (i=0;i<dropdown.length;i++){
+			let opt=`<option value="${dropdown[i][0]}">${dropdown[i][0]}<option>`
+			select[0].innerHTML+=opt
+			select[1].innerHTML+=opt
+		}
+	}
+	btn.addEventListener("click",()=>{
+		let curr1=select[0].value
+		let curr2=select[1].value
+		let inputVal=input.value
+		if (select[0].value==select[1].value){
+			err.innerHTML="*Please select different currencies"
+      document.getElementById("result").value=''
+		}
+		else
+      err.innerHTML=""
+			converter(inputVal,curr1,curr2)
+	})
+	function converter(inputVal,curr1,curr2){
+		const host = 'api.frankfurter.app';
+		fetch(`https://${host}/latest?amount=${inputVal}&from=${curr1}&to=${curr2}`)
+  		.then(resp => resp.json())
+  		.then((data) => {
+   		 document.getElementById("result").value=Object.values(data.rates)[0]
+  		});
+	}
+</script>
+<html>
